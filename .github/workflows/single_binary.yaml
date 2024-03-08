@@ -25,6 +25,6 @@ jobs:
             - name: Build
               run: |
                 python --version
-                pip install bdist_pyinstaller
+                pip install bdist_pyinstaller toml
                 python singlebinary.py bdist_pyinstaller
                 
