@@ -39,7 +39,7 @@ jobs:
                 python --version
                 pip install bdist_pyinstaller toml setuptools
                 python singlebinary.py bdist_pyinstaller
-                gh release create v0.0.1-${matrix.os} --title "Draft 0.0.1 ${matrix.os}" --notes "Single binary for ${matrix.os}" --clobber ./build/*/bdist_pyinstaller/eve-*
+                gh release create v0.0.1-${{matrix.os}} --title "Draft 0.0.1 ${{matrix.os}}" --notes "Single binary for ${{matrix.os}}" --clobber ./build/*/bdist_pyinstaller/eve-*
                 
                 # Linux:
                 # ./build/bdist.linux-x86_64/bdist_pyinstaller/eve-0.0.0
