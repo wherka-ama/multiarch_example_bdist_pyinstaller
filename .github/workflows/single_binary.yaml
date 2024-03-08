@@ -5,20 +5,32 @@ on:
 
 permissions: 
     pull-requests: read
-    contents: read
-
+    contents: write
 
 concurrency:
     group: ${{ github.workflow }}-${{ github.event.pull_request.head.label || github.head_ref || github.ref }}
     cancel-in-progress: true
 
 jobs:
+    # draft-release:
+    #     runs-on: ubuntu-latest
+    #     env:
+    #         GH_TOKEN: ${{ github.token }}
+    #     steps:
+    #         - name: Checkout
+    #           uses: actions/checkout@v4
+    #         - name: Draft release
+    #           run: |
+    #             gh release create v0.0.1 --title "Draft 0.0.1" --notes "N/A"
     build-image:
         strategy:
             matrix:
               os: [ubuntu-latest, windows-latest, macos-latest]
+        env:
+            GH_TOKEN: ${{ github.token }}
         name: Build image
         runs-on: ${{ matrix.os }}
+        # needs: draft-release
         steps:
             - name: Checkout
               uses: actions/checkout@v4
@@ -27,4 +39,13 @@ jobs:
                 python --version
                 pip install bdist_pyinstaller toml setuptools
                 python singlebinary.py bdist_pyinstaller
+                gh release create v0.0.1-${matrix.os} --title "Draft 0.0.1 ${matrix.os}" --notes "Single binary for ${matrix.os}" --clobber ./build/*/bdist_pyinstaller/eve-*
+                
+                # Linux:
+                # ./build/bdist.linux-x86_64/bdist_pyinstaller/eve-0.0.0
+                # MacOS:
+                # ./build/bdist.macosx-10.9-universal2/bdist_pyinstaller/eve-0.0.0
+                # Windows:
+                # \build\bdist.win-amd64\bdist_pyinstaller\eve-0.0.0.exe
+                # gh release upload v0.0.1 'README.md#README 0.0.1' --clobber
                 
