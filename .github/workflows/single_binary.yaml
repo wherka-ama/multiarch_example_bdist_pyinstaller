@@ -35,6 +35,7 @@ jobs:
             - name: Checkout
               uses: actions/checkout@v4
             - name: Build
+              shell: bash
               run: |
                 python --version
                 pip install bdist_pyinstaller toml setuptools
