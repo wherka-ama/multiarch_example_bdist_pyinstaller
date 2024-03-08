@@ -1,0 +1,43 @@
+name: Build single binary executables for multiple architectures
+
+on:
+    workflow_dispatch: 
+
+permissions: 
+    pull-requests: read
+    contents: write
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.event.pull_request.head.label || github.head_ref || github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    # draft-release:
+    #     runs-on: ubuntu-latest
+    #     env:
+    #         GH_TOKEN: ${{ github.token }}
+    #     steps:
+    #         - name: Checkout
+    #           uses: actions/checkout@v4
+    #         - name: Draft release
+    #           run: |
+    #             gh release create v0.0.1 --title "Draft 0.0.1" --notes "N/A"
+    build-image:
+        strategy:
+            matrix:
+              os: [ubuntu-latest, windows-latest, macos-latest]
+        env:
+            GH_TOKEN: ${{ github.token }}
+        name: Build image
+        runs-on: ${{ matrix.os }}
+        # needs: draft-release
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+            - name: Build
+              shell: bash
+              run: |
+                python --version
+                pip install bdist_pyinstaller toml setuptools
+                python singlebinary.py bdist_pyinstaller
+                gh release create v0.0.1-${{matrix.os}} --title "Draft 0.0.1 ${{matrix.os}}" --notes "Single binary for ${{matrix.os}}" ./build/*/bdist_pyinstaller/eve-*                

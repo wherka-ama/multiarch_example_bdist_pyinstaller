@@ -1,0 +1,9 @@
+[tool.poetry]
+name = "eve"
+version = "0.0.0"
+description = "A bit of a silly example"
+authors = ["Tom Jones <tom.jones@wales.com>"]
+packages = [ { include = "eve" } ]
+
+[tool.poetry.scripts]
+eve = "eve.main:run"
