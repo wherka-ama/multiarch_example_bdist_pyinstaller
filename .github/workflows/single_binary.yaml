@@ -42,7 +42,7 @@ jobs:
                 python singlebinary.py bdist_pyinstaller
                 suffix=$(uname)-$(uname -m)
                 cp ./build/*/bdist_pyinstaller/eve-* ./eve-$suffix
-                gh release upload v0.0.1 --clobber ./eve-$suffix
+                gh release upload v0.0.2 --clobber ./eve-$suffix
                 
                 # gh release create v0.0.1-${{matrix.os}} --title "Draft 0.0.1 ${{matrix.os}}" --notes "Single binary for ${{matrix.os}}" ./build/*/bdist_pyinstaller/eve-*
                 # ./build/bdist.linux-x86_64/bdist_pyinstaller/eve-0.0.0
