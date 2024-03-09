@@ -12,16 +12,16 @@ concurrency:
     cancel-in-progress: true
 
 jobs:
-    # draft-release:
-    #     runs-on: ubuntu-latest
-    #     env:
-    #         GH_TOKEN: ${{ github.token }}
-    #     steps:
-    #         - name: Checkout
-    #           uses: actions/checkout@v4
-    #         - name: Draft release
-    #           run: |
-    #             gh release create v0.0.1 --title "Draft 0.0.1" --notes "N/A"
+    draft-release:
+        runs-on: ubuntu-latest
+        env:
+            GH_TOKEN: ${{ github.token }}
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+            - name: Draft release
+              run: |
+                gh release create v0.0.2 --title "Draft 0.0.2" --notes "N/A"
     build-image:
         strategy:
             matrix:
@@ -30,7 +30,7 @@ jobs:
             GH_TOKEN: ${{ github.token }}
         name: Build image
         runs-on: ${{ matrix.os }}
-        # needs: draft-release
+        needs: draft-release
         steps:
             - name: Checkout
               uses: actions/checkout@v4
@@ -40,4 +40,12 @@ jobs:
                 python --version
                 pip install bdist_pyinstaller toml setuptools
                 python singlebinary.py bdist_pyinstaller
-                gh release create v0.0.1-${{matrix.os}} --title "Draft 0.0.1 ${{matrix.os}}" --notes "Single binary for ${{matrix.os}}" ./build/*/bdist_pyinstaller/eve-*                
+                suffix=$(uname)-$(uname -m)
+                cp ./build/*/bdist_pyinstaller/eve-* ./eve-$suffix
+                gh release upload v0.0.1 --clobber ./eve-$suffix
+                
+                # gh release create v0.0.1-${{matrix.os}} --title "Draft 0.0.1 ${{matrix.os}}" --notes "Single binary for ${{matrix.os}}" ./build/*/bdist_pyinstaller/eve-*
+                # ./build/bdist.linux-x86_64/bdist_pyinstaller/eve-0.0.0
+                # ./build/bdist.macosx-10.9-universal2/bdist_pyinstaller/eve-0.0.0
+                # ./build\bdist.win-amd64\bdist_pyinstaller\eve-0.0.0.exe
+
